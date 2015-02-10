@@ -73,12 +73,11 @@ define([
   };
 
   function Emitter() {
-    this[HANDLERS] = {};
   }
 
   Emitter.prototype.on = function (type, callback, data) {
     var me = this;
-    var handlers = me[HANDLERS];
+    var handlers = me[HANDLERS] || (me[HANDLERS] = {});
     var handler;
 
     if (callback === UNDEFINED) {
@@ -108,7 +107,7 @@ define([
 
   Emitter.prototype.off = function (type, callback) {
     var me = this;
-    var handlers = me[HANDLERS];
+    var handlers = me[HANDLERS] || (me[HANDLERS] = {});
     var handler;
     var head = UNDEFINED;
     var tail = UNDEFINED;
@@ -189,7 +188,7 @@ define([
 
   Emitter.prototype.emit = function (event) {
     var me = this;
-    var handlers = me[HANDLERS];
+    var handlers = me[HANDLERS] || (me[HANDLERS] = {});
     var _event;
     var _type;
     var _executor;
