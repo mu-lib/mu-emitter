@@ -75,6 +75,8 @@ define([
   function Emitter() {
   }
 
+  Emitter.prototype[EXECUTOR] = executor;
+
   Emitter.prototype.on = function (type, callback, data) {
     var me = this;
     var handlers = me[HANDLERS] || (me[HANDLERS] = {});
@@ -196,12 +198,12 @@ define([
     if (OBJECT_TOSTRING.call(event) === TOSTRING_STRING) {
       _event = {};
       _type = _event[TYPE] = event;
-      _executor = executor;
+      _executor = me[EXECUTOR];
     }
     else if (event.hasOwnProperty(TYPE)) {
       _event = event;
       _type = event[TYPE];
-      _executor = event[EXECUTOR] || executor;
+      _executor = event[EXECUTOR] || me[EXECUTOR];
     }
     else {
       throw new Error("Unable to use 'event'");
