@@ -8,5 +8,7 @@ define({
   "tail": "tail",
   "next": "next",
   "count": "count",
-  "limit": "limit"
+  "limit": "limit",
+  "on": "on",
+  "off": "off"
 });
