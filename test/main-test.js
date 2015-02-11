@@ -32,12 +32,8 @@ define([
       var scope1 = {};
       var scope2 = {};
       var callback;
-      var callback1 = this.spy(function () {
-        assert.equals(this, scope1);
-      });
-      var callback2 = this.spy(function () {
-        assert.equals(this, scope2);
-      });
+      var callback1 = this.spy();
+      var callback2 = this.spy();
 
       callback = {};
       callback[SCOPE] = scope1;
@@ -52,7 +48,9 @@ define([
       emitter.emit("test");
 
       assert.calledOnce(callback1);
+      assert.calledOn(callback1, scope1);
       assert.calledOnce(callback2);
+      assert.calledOn(callback2, scope2);
     },
 
     "emit with scope filtering": function() {
