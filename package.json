@@ -1,0 +1,6 @@
+{
+  "description": "Micro Emitter",
+  "devDependencies": {
+    "buster-amd": "~0.3"
+  }
+}
