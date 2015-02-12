@@ -12,7 +12,7 @@ define([
   var SCOPE = config.scope;
   var LIMIT = config.limit;
 
-  buster.testCase("troopjs-core/event/emitter", {
+  buster.testCase("mu-emitter/main", {
     "emit" : function () {
       var emitter = new Emitter();
       var callback = this.spy();
