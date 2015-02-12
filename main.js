@@ -11,7 +11,7 @@ define([
   var TOSTRING_STRING = "[object String]";
   var TOSTRING_FUNCTION = "[object Function]";
 
-  var HANDLERS = "handlers";
+  var HANDLERS = config.handlers;
   var EXECUTOR = config.executor;
   var TYPE = config.type;
   var CALLBACK = config.callback;

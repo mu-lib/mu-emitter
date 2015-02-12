@@ -4,7 +4,7 @@ define([ "./config" ], function (config) {
   var UNDEFINED;
   var OBJECT_TOSTRING = Object.prototype.toString;
   var TOSTRING_FUNCTION = "[object Function]";
-  var EMITTER = "emitter";
+  var EMITTER = config.emitter;
   var TYPE = config.type;
   var CALLBACK = config.callback;
   var DATA = config.data;

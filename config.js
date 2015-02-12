@@ -1,4 +1,6 @@
 define({
+  "handlers": "handlers",
+  "emitter": "emitter",
   "type": "type",
   "callback": "callback",
   "data": "data",
