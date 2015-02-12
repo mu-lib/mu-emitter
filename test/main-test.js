@@ -5,10 +5,12 @@ define([
   "use strict";
 
   var assert = buster.referee.assert;
+  var refute = buster.referee.refute;
 
   var TYPE = config.type;
   var CALLBACK = config.callback;
   var SCOPE = config.scope;
+  var LIMIT = config.limit;
 
   buster.testCase("troopjs-core/event/emitter", {
     "emit" : function () {
@@ -146,81 +148,65 @@ define([
 
     },
 
-    "//on/emit reject": function () {
-      var emitter = Emitter();
+    "emit reject": function () {
+      var emitter = new Emitter();
+      var callback1 = this.spy(function (pass) {
+        if (pass !== true) {
+          throw new Error("test");
+        }
 
-      return emitter
-        .on("test", function (pass) {
-          return pass
-            ? when.resolve()
-            : when.reject();
-        })
-        .on("test", function (pass) {
-          assert.isTrue(pass);
-        })
-        .emit("test", false)
-        .then(function () {
-          assert(false);
-        }, function() {
-          assert(true);
-        })
-        .ensure(function () {
-          return emitter
-            .emit("test", true)
-            .then(function () {
-              assert(true);
-            }, function() {
-              assert(false);
-            });
-        });
+        return pass;
+      });
+      var callback2 = this.spy();
+
+      emitter.on("test", callback1);
+      emitter.on("test", callback2);
+
+      try {
+        emitter.emit("test", false);
+      }
+      catch (e) {
+      }
+
+      assert.calledOnce(callback1);
+      assert.threw(callback1);
+      refute.called(callback2);
+
+      try {
+        emitter.emit("test", true);
+      }
+      catch (e) {
+      }
+
+      assert.calledTwice(callback1);
+      assert.calledOnce(callback2);
     },
 
-    "//limit - one": function ()  {
-      var emitter = Emitter();
-      var spy = this.spy();
+    "limit - one": function ()  {
+      var emitter = new Emitter();
+      var callback = this.spy();
 
-      return emitter
-        .one("test", spy)
-        .emit("test")
-        .then(function () {
-          return emitter.emit("test");
-        })
-        .then(function () {
-          assert.calledOnce(spy);
-        });
+      emitter.one("test", callback);
+      emitter.emit("test");
+      emitter.emit("test");
+
+      assert.calledOnce(callback);
     },
 
-    "//limit - many": function () {
-      var emitter = Emitter();
-      var spy = this.spy();
+    "limit - many": function () {
+      var emitter = new Emitter();
+      var callback = this.spy();
+      var event = {};
 
-      return emitter
-        .on("test", {
-          "callback": spy,
-          "context": emitter,
-          "limit": 2
-        })
-        .emit("test")
-        .then(function () {
-          return emitter.emit("test");
-        })
-        .then(function () {
-          return emitter.emit("test");
-        })
-        .then(function () {
-          assert.calledTwice(spy);
-        });
-    },
+      event[CALLBACK] = callback;
+      event[LIMIT] = 2;
 
-    "//bug out in the first event handler": function() {
-      var emitter = Emitter();
-      var err = new Error("bug out");
-      return emitter.on("foo", function() {
-        throw err;
-      })
-        .emit("foo").otherwise(function(error) {
-          assert.same(error, err);
-        });
+      emitter.on("test", event);
+      emitter.emit("test");
+      emitter.emit("test");
+      emitter.emit("test");
+
+      assert.calledTwice(callback);
     }
   });
 });
