@@ -44,7 +44,7 @@ define([
 
       handlers[TAIL] = handlers.hasOwnProperty(TAIL)
         ? handlers[TAIL][NEXT] = handler
-        : handler[HEAD] = handler;
+        : handlers[HEAD] = handler;
     }
     else {
       handlers = handlers[type] = {};
