@@ -6,7 +6,6 @@ define([
   "use strict";
 
   var UNDEFINED;
-  var ARRAY_SLICE = Array.prototype.slice;
   var OBJECT_TOSTRING = Object.prototype.toString;
   var TOSTRING_STRING = "[object String]";
   var TOSTRING_FUNCTION = "[object Function]";
@@ -141,34 +140,49 @@ define([
 
   Emitter.prototype.emit = function (event) {
     var me = this;
-    var handlers = me[HANDLERS] || (me[HANDLERS] = {});
+    var args = arguments;
+    var length = args.length;
+    var _args = new Array(length - 1);
+    var _handlers = me[HANDLERS] || (me[HANDLERS] = {});
     var _event;
     var _type;
     var _executor;
 
+    // let `args` be `Array.prototyps.slice.call(arguments, 1)` without deop
+    while (length-- > 1) {
+      _args[length - 1] = args[length];
+    }
+
+    // If we `event` is a string use defaults ...
     if (OBJECT_TOSTRING.call(event) === TOSTRING_STRING) {
       _event = {};
       _type = _event[TYPE] = event;
       _executor = me[EXECUTOR];
     }
+    // ... or if we ducktype TYPE extract params ...
     else if (event.hasOwnProperty(TYPE)) {
       _event = event;
       _type = event[TYPE];
       _executor = event[EXECUTOR] || me[EXECUTOR];
     }
+    // ... or bail out
     else {
       throw new Error("Unable to use 'event'");
     }
 
 
-    if (handlers.hasOwnProperty(_type)) {
-      handlers = handlers[_type];
-    } else {
-      handlers = handlers[_type] = {};
-      handlers[TYPE] = _type;
+    // If we have `_handlers[type]` use it ...
+    if (_handlers.hasOwnProperty(_type)) {
+      _handlers = _handlers[_type];
+    }
+    // ... otherwise create it
+    else {
+      _handlers = _handlers[_type] = {};
+      _handlers[TYPE] = _type;
     }
 
-    return _executor.call(me, _event, handlers, ARRAY_SLICE.call(arguments, 1));
+    // Call `_executor` and return
+    return _executor.call(me, _event, _handlers, _args);
   };
 
   return Emitter;
