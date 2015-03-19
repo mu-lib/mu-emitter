@@ -55,6 +55,8 @@ define([
     if (handler.hasOwnProperty(ON)) {
       handler[ON].call(me, handler, handlers);
     }
+
+    return handler;
   };
 
   Emitter.prototype.off = function (type, callback) {
