@@ -11,9 +11,6 @@
     "bower_components",
     "node_modules"
   ],
-  "dependencies": {
-    "poly": "^0"
-  },
   "devDependencies": {
     "requirejs": "^2.1"
   }

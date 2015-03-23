@@ -1,7 +1,4 @@
-define([
-  "./config",
-  "poly/array"
-], function (config) {
+define([ "./config" ], function (config) {
   "use strict";
 
   var UNDEFINED;
