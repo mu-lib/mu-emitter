@@ -5,12 +5,15 @@
   "moduleType": [
     "amd"
   ],
-  "private": true,
   "ignore": [
     "**/.*",
     "bower_components",
-    "node_modules"
+    "node_modules",
+    "test"
   ],
+  "dependencies": {
+    "mu-error": "^0"
+  },
   "devDependencies": {
     "requirejs": "^2.1"
   }

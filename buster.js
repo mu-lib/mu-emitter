@@ -10,8 +10,7 @@ module.exports["mu-emitter"] = {
   ],
 
   "resources" : [
-    "*.js",
-    "bower_components/requirejs/require.js"
+    "**/*.js"
   ],
 
   "extensions": [ require("buster-amd") ],

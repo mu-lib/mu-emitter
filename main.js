@@ -1,8 +1,9 @@
 define([
   "./config",
   "./handler",
-  "./executor"
-], function (config, Handler, executor) {
+  "./executor",
+  "./error"
+], function (config, Handler, executor, EmitterError) {
   "use strict";
 
   var UNDEFINED;
@@ -33,7 +34,7 @@ define([
     var handler;
 
     if (callback === UNDEFINED) {
-      throw new Error("no 'callback' provided");
+      throw new EmitterError("no 'callback' provided");
     }
 
     handler = new Handler(me, type, callback, data);
@@ -169,7 +170,7 @@ define([
     }
     // ... or bail out
     else {
-      throw new Error("Unable to use 'event'");
+      throw new EmitterError("Unable to use 'event'");
     }
 
 

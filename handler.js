@@ -1,4 +1,7 @@
-define([ "./config" ], function (config) {
+define([
+  "./config",
+  "./error"
+], function (config, EmitterError) {
   "use strict";
 
   var UNDEFINED;
@@ -41,7 +44,7 @@ define([ "./config" ], function (config) {
       }
     }
     else {
-      throw new Error("Unable to use 'callback'");
+      throw new EmitterError("Unable to use 'callback'");
     }
   }
 
