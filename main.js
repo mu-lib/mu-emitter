@@ -56,6 +56,8 @@ define([
 
   Emitter.prototype.off = function (type, callback) {
     var me = this;
+    var result = [];
+    var length = 0;
     var handlers = me[HANDLERS] || (me[HANDLERS] = {});
     var handler;
     var head = UNDEFINED;
@@ -85,6 +87,8 @@ define([
             break unlink;
           }
 
+          result[length++] = handler;
+
           continue;
         }
 
@@ -112,6 +116,8 @@ define([
         delete handlers[TAIL];
       }
     }
+
+    return result;
   };
 
   Emitter.prototype.one = function (type, callback, data) {

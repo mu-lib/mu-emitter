@@ -7,12 +7,32 @@ define([
   var assert = buster.referee.assert;
   var refute = buster.referee.refute;
 
+  var HANDLERS = config.handlers;
+  var HEAD = config.head;
   var TYPE = config.type;
   var CALLBACK = config.callback;
   var SCOPE = config.scope;
   var LIMIT = config.limit;
 
   buster.testCase("mu-emitter/main", {
+    "on returns handler": function () {
+      var emitter = new Emitter();
+      var handler = emitter.on("test", function () {});
+
+      assert.same(handler, emitter[HANDLERS].test[HEAD]);
+    },
+
+    "off returns array of handlers": function () {
+      var emitter = new Emitter();
+      var handler1 = emitter.on("test", function () {});
+      var handler2 = emitter.on("test", function () {});
+
+      var handlers = emitter.off("test");
+
+      assert.same(handler1, handlers[0]);
+      assert.same(handler2, handlers[1]);
+    },
+
     "emit" : function () {
       var emitter = new Emitter();
       var callback = this.spy();
@@ -145,7 +165,36 @@ define([
       emitter.emit("test");
 
       assert.calledThrice(callback1);
+    },
 
+    "off with callback filtering": function() {
+      var emitter = new Emitter();
+      var scope1 = {};
+      var scope2 = {};
+      var callback;
+      var callback1 = this.spy();
+
+      callback = {};
+      callback[SCOPE] = scope1;
+      callback[CALLBACK] = callback1;
+      emitter.on("test", callback);
+
+      callback = {};
+      callback[SCOPE] = scope2;
+      callback[CALLBACK] = callback1;
+      emitter.on("test", callback);
+
+      emitter.emit("test");
+
+      assert.calledTwice(callback1);
+
+      callback = {};
+      callback[CALLBACK] = callback1;
+      emitter.off("test", callback);
+
+      emitter.emit("test");
+
+      assert.calledTwice(callback1);
     },
 
     "emit reject": function () {
