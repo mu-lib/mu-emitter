@@ -14,8 +14,6 @@ define([
   var SCOPE = config.scope;
   var LIMIT = config.limit;
   var COUNT = config.count;
-  var ON = config.on;
-  var OFF = config.off;
 
   function Handler(emitter, type, callback, data) {
     var me = this;
@@ -35,12 +33,6 @@ define([
       if (callback.hasOwnProperty(LIMIT)) {
         me[LIMIT] = callback[LIMIT];
         me[COUNT] = 0;
-      }
-      if (callback.hasOwnProperty(ON)) {
-        me[ON] = callback[ON];
-      }
-      if (callback.hasOwnProperty(OFF)) {
-        me[OFF] = callback[OFF];
       }
     }
     else {

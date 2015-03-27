@@ -20,8 +20,6 @@ define([
   var HEAD = config.head;
   var TAIL = config.tail;
   var NEXT = config.next;
-  var ON = config.on;
-  var OFF = config.off;
 
   function Emitter() {
   }
@@ -51,10 +49,6 @@ define([
 
       handlers[TYPE] = type;
       handlers[HEAD] = handlers[TAIL] = handler;
-    }
-
-    if (handler.hasOwnProperty(ON)) {
-      handler[ON].call(me, handler, handlers);
     }
 
     return handler;
@@ -89,10 +83,6 @@ define([
 
           if (_scope && handler[SCOPE] !== _scope) {
             break unlink;
-          }
-
-          if (handler.hasOwnProperty(OFF)) {
-            handler[OFF].call(me, handler, handlers);
           }
 
           continue;

@@ -51,15 +51,7 @@ define(function () {
     /**
      * Property name for `limit`
      */
-    "limit": "limit",
-    /**
-     * Property name for `on`
-     */
-    "on": "on",
-    /**
-     * Property name for `off`
-     */
-    "off": "off"
+    "limit": "limit"
   };
 
   return CONFIG;
