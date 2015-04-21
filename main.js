@@ -62,58 +62,76 @@ define([
     var handler;
     var head = UNDEFINED;
     var tail = UNDEFINED;
+    var _handler;
     var _callback;
     var _scope;
 
     if (handlers.hasOwnProperty(type)) {
       handlers = handlers[type];
 
-      if (OBJECT_TOSTRING.call(callback) === TOSTRING_FUNCTION) {
-        _callback = callback;
-        _scope = me;
-      }
-      else if (callback !== UNDEFINED) {
-        _callback = callback[CALLBACK];
-        _scope = callback[SCOPE];
-      }
-
-      for (handler = handlers[HEAD]; handler !== UNDEFINED; handler = handler[NEXT]) {
-        unlink: {
-          if (_callback && handler[CALLBACK] !== _callback) {
-            break unlink;
-          }
-
-          if (_scope && handler[SCOPE] !== _scope) {
-            break unlink;
-          }
-
+      if (callback === UNDEFINED) {
+        for (handler = handlers[HEAD]; handler !== UNDEFINED; handler = handler[NEXT]) {
           result[length++] = handler;
-
-          continue;
         }
 
-        if (head === UNDEFINED) {
-          head = tail = handler;
+        delete handlers[HEAD];
+        delete handlers[TAIL];
+      }
+      else {
+        if (callback instanceof Handler) {
+          _handler = callback;
+        }
+        else if (OBJECT_TOSTRING.call(callback) === TOSTRING_FUNCTION) {
+          _callback = callback;
+          _scope = me;
         }
         else {
-          tail = tail[NEXT] = handler;
+          _callback = callback[CALLBACK];
+          _scope = callback[SCOPE];
         }
-      }
 
-      if (head !== UNDEFINED) {
-        handlers[HEAD] = head;
-      }
-      else {
-        delete handlers[HEAD];
-      }
+        for (handler = handlers[HEAD]; handler !== UNDEFINED; handler = handler[NEXT]) {
+          unlink: {
+            if (_handler && handler !== _handler) {
+              break unlink;
+            }
 
-      if (tail !== UNDEFINED) {
-        handlers[TAIL] = tail;
+            if (_callback && handler[CALLBACK] !== _callback) {
+              break unlink;
+            }
 
-        delete tail[NEXT];
-      }
-      else {
-        delete handlers[TAIL];
+            if (_scope && handler[SCOPE] !== _scope) {
+              break unlink;
+            }
+
+            result[length++] = handler;
+
+            continue;
+          }
+
+          if (head === UNDEFINED) {
+            head = tail = handler;
+          }
+          else {
+            tail = tail[NEXT] = handler;
+          }
+        }
+
+        if (head !== UNDEFINED) {
+          handlers[HEAD] = head;
+        }
+        else {
+          delete handlers[HEAD];
+        }
+
+        if (tail !== UNDEFINED) {
+          handlers[TAIL] = tail;
+
+          delete tail[NEXT];
+        }
+        else {
+          delete handlers[TAIL];
+        }
       }
     }
 
