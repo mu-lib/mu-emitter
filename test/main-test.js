@@ -33,6 +33,17 @@ define([
       assert.same(handler2, handlers[1]);
     },
 
+    "handler.off forwards to emitter.off": function () {
+      var emitter = new Emitter();
+      var callback = this.spy();
+      var handler = emitter.on("test", callback);
+
+      handler.off();
+      emitter.emit("test", "test");
+
+      refute.called(callback);
+    },
+
     "emit" : function () {
       var emitter = new Emitter();
       var callback = this.spy();

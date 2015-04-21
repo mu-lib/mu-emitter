@@ -47,13 +47,20 @@ define([
     // Get result from execution of `handler[CALLBACK]`
     var result = me[CALLBACK].apply(me[SCOPE], args);
 
-    // If there's a `me[LIMIT]` and `++me[COUNT]` is greater or equal to it ...
+    // If there's a `me[LIMIT]` and `++me[COUNT]` is greater or equal to it we should `.off` ourselves
     if (me.hasOwnProperty(LIMIT) && ++me[COUNT] >= me[LIMIT]) {
-      // ... `me[EMITTER].off` `me` (note that `me[CALLBACK]` and `me[SCOPE]` are used by `.off`)
-      me[EMITTER].off(me[TYPE], me);
+      me.off();
     }
 
     return result;
+  };
+
+  Handler.prototype.off = function () {
+    // Let `me` be `this`
+    var me = this;
+
+    // `me[EMITTER].off` `me` (note that `me[CALLBACK]` and `me[SCOPE]` are used by `.off`)
+    me[EMITTER].off(me[TYPE], me);
   };
 
   return Handler;
