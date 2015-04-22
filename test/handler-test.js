@@ -31,18 +31,6 @@ define([
       emitter.emit("test", "test");
 
       refute.called(callback);
-    },
-
-    "off only removes exact handler": function () {
-      var emitter = new Emitter();
-      var callback = this.spy();
-      var handler = emitter.on("test", callback);
-
-      emitter.on("test", callback);
-      handler.off();
-      emitter.emit("test", "test");
-
-      assert.calledOnce(callback);
     }
   });
 });

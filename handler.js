@@ -23,7 +23,7 @@ define([
    * @constructor
    * @param {module:mu-emitter/main} emitter Event emitter
    * @param {String} type Type this handler handles
-   * @param {Function} callback Callback that will be called
+   * @param {Function|Object} callback Callback that will be called
    * @param {Array} [data] Data associated with this handler
    * @alias module:mu-emitter/handler
    */
