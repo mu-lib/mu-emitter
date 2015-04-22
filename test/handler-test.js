@@ -22,6 +22,12 @@ define([
       assert.equals(handler[DATA], [ 1, 2, 3 ]);
     },
 
+    "emitter.one stores rest parameters as handler.data": function () {
+      var handler = new Emitter().one("test", function () {}, 1, 2, 3);
+
+      assert.equals(handler[DATA], [ 1, 2, 3 ]);
+    },
+
     "off forwards to emitter.off": function () {
       var emitter = new Emitter();
       var callback = this.spy();
