@@ -14,6 +14,7 @@ define([
   var OBJECT_TOSTRING = Object.prototype.toString;
   var TOSTRING_STRING = "[object String]";
   var TOSTRING_FUNCTION = "[object Function]";
+  var LENGTH = "length";
 
   var HANDLERS = config.handlers;
   var EXECUTOR = config.executor;
@@ -39,11 +40,12 @@ define([
    * Adds an event handler
    * @param {String} type
    * @param {Function|Object} callback
-   * @param {Array} [data]
    * @return {Handler|*}
    */
-  Emitter.prototype.on = function (type, callback, data) {
+  Emitter.prototype.on = function (type, callback) {
     var me = this;
+    var length = arguments[LENGTH];
+    var data;
     var handlers = me[HANDLERS] || (me[HANDLERS] = {});
     var handler;
 
@@ -51,7 +53,22 @@ define([
       throw new EmitterError("no 'callback' provided");
     }
 
-    handler = new Handler(me, type, callback, data);
+    // check if we have rest arguments
+    if (length > 2) {
+      data = new Array(length - 2);
+
+      // let `data` be `Array.prototyps.slice.call(arguments, 2)` without deop
+      while (length-- > 2) {
+        data[ length - 2 ] = arguments[length];
+      }
+
+      // create `handler` with `data`
+      handler = new Handler(me, type, callback, data);
+    }
+    else {
+      // create `handler` without `data`
+      handler = new Handler(me, type, callback);
+    }
 
     // if we have `handlers` for this `type` use them ...
     if (handlers.hasOwnProperty(type)) {
@@ -176,11 +193,12 @@ define([
    * Adds an event handler that will be called at most once
    * @param {String} type
    * @param {Function|Object} callback
-   * @param {Array} [data]
    * @return {Handler|*}
    */
-  Emitter.prototype.one = function (type, callback, data) {
+  Emitter.prototype.one = function (type, callback) {
     var me = this;
+    var length = arguments[LENGTH];
+    var args;
     var _callback;
 
     if (OBJECT_TOSTRING.call(callback) === TOSTRING_FUNCTION) {
@@ -193,19 +211,36 @@ define([
       _callback[LIMIT] = 1;
     }
 
-    return me.on(type, _callback, data);
+    // check if rest arguments were provided
+    if (length > 2) {
+      // create `args`
+      args = new Array(length - 1);
+
+      // let `args` be `Array.prototyps.slice.call(arguments)` without deop
+      while (length--) {
+        args[length] = arguments[length];
+      }
+
+      // let `args[1]` be `_callback`
+      args[1] = _callback;
+    }
+
+    // return result from calling or applying `.on` depending on if we have `args`
+    return args !== UNDEFINED
+      ? me.on.apply(me, args)
+      : me.on(type, _callback);
   };
 
   /**
    * Emits an event
    * @param {String|Object} event Event type
-   * @param {...*} args Arguments to pass to handlers
+   * @param {...*} [args] Arguments to pass to handlers
    * @return {*}
    */
   Emitter.prototype.emit = function (event) {
     var me = this;
     var args = arguments;
-    var length = args.length;
+    var length = args[LENGTH];
     var _args = new Array(length - 1);
     var _handlers = me[HANDLERS] || (me[HANDLERS] = {});
     var _event;
@@ -233,7 +268,6 @@ define([
     else {
       throw new EmitterError("Unable to use 'event'");
     }
-
 
     // If we have `_handlers[type]` use it ...
     if (_handlers.hasOwnProperty(_type)) {
