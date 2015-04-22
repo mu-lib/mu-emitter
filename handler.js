@@ -10,6 +10,7 @@ define([
   var UNDEFINED;
   var OBJECT_TOSTRING = Object.prototype.toString;
   var TOSTRING_FUNCTION = "[object Function]";
+  var LENGTH = "length";
   var EMITTER = config.emitter;
   var TYPE = config.type;
   var CALLBACK = config.callback;
@@ -32,7 +33,11 @@ define([
 
     me[EMITTER] = emitter;
     me[TYPE] = type;
-    me[DATA] = data;
+
+    // only set `me[DATA]` if data was _actually_ provided
+    if (arguments[LENGTH] > 3) {
+      me[DATA] = data;
+    }
 
     if (OBJECT_TOSTRING.call(callback) === TOSTRING_FUNCTION) {
       me[CALLBACK] = callback;
