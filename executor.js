@@ -1,7 +1,10 @@
 /**
  * @module mu-emitter/executor
  */
-define([ "./config" ], function (config) {
+define([
+  "./config",
+  "./handler"
+], function (config, Handler) {
   "use strict";
 
   var UNDEFINED;
@@ -10,7 +13,6 @@ define([ "./config" ], function (config) {
   var HEAD = config.head;
   var NEXT = config.next;
 
-
   /**
    * Represents an event executor
    * @alias module:mu-emitter/executor
@@ -18,11 +20,18 @@ define([ "./config" ], function (config) {
   return function (event, handlers, args) {
     var _handlers = [];
     var _handlersCount = 0;
+    var _handler = event instanceof Handler
+      ? event
+      : UNDEFINED;
     var _callback = event[CALLBACK];
     var _scope = event[SCOPE];
     var handler;
 
     for (handler = handlers[HEAD]; handler !== UNDEFINED; handler = handler[NEXT]) {
+      if (_handler && _handler !== handler) {
+        continue;
+      }
+
       if (_callback && handler[CALLBACK] !== _callback) {
         continue;
       }

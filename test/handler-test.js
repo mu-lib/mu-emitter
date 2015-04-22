@@ -8,6 +8,8 @@ define([
   var refute = buster.referee.refute;
 
   var DATA = config.data;
+  var CALLBACK = config.callback;
+  var LIMIT = config.limit;
 
   buster.testCase("mu-emitter/handler", {
     "handler.data is undefined by default": function () {
@@ -39,16 +41,20 @@ define([
       refute.called(callback);
     },
 
-    "off only removes exact handler": function () {
+    "limit": function () {
       var emitter = new Emitter();
       var callback = this.spy();
-      var handler = emitter.on("test", callback);
+      var event = {};
 
-      emitter.on("test", callback);
-      handler.off();
-      emitter.emit("test", "test");
+      event[CALLBACK] = callback;
+      event[LIMIT] = 2;
 
-      assert.calledOnce(callback);
+      emitter.on("test", event);
+      emitter.emit("test");
+      emitter.emit("test");
+      emitter.emit("test");
+
+      assert.calledTwice(callback);
     }
   });
 });
