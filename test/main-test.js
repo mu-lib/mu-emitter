@@ -20,7 +20,7 @@ define([
       assert.same(handler, emitter[HANDLERS].test[HEAD]);
     },
 
-    "one limits": function ()  {
+    "one": function ()  {
       var emitter = new Emitter();
       var callback = this.spy();
 

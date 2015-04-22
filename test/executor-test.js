@@ -9,7 +9,6 @@ define([
   var TYPE = config.type;
   var CALLBACK = config.callback;
   var SCOPE = config.scope;
-  var LIMIT = config.limit;
 
   buster.testCase("mu-emitter/executor", {
     "handler filtering": function () {
@@ -88,22 +87,6 @@ define([
 
       assert.calledTwice(callback1);
       assert.calledTwice(callback2);
-    },
-
-    "limit": function () {
-      var emitter = new Emitter();
-      var callback = this.spy();
-      var event = {};
-
-      event[CALLBACK] = callback;
-      event[LIMIT] = 2;
-
-      emitter.on("test", event);
-      emitter.emit("test");
-      emitter.emit("test");
-      emitter.emit("test");
-
-      assert.calledTwice(callback);
     }
   });
 });
