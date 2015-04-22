@@ -189,12 +189,19 @@ define([
    * Adds an event handler that will be called at most once
    * @param {String} type
    * @param {Function|Object} callback
-   * @param {Array} [data]
    * @return {Handler|*}
    */
-  Emitter.prototype.one = function (type, callback, data) {
+  Emitter.prototype.one = function (type, callback) {
     var me = this;
+    var args = arguments;
+    var length = args.length;
+    var _args = new Array(length - 1);
     var _callback;
+
+    // let `args` be `Array.prototyps.slice.call(arguments)` without deop
+    while (length--) {
+      _args[length] = args[length];
+    }
 
     if (OBJECT_TOSTRING.call(callback) === TOSTRING_FUNCTION) {
       _callback = {};
@@ -206,7 +213,9 @@ define([
       _callback[LIMIT] = 1;
     }
 
-    return me.on(type, _callback, data);
+    _args[1] = _callback;
+
+    return me.on.apply(me, _args);
   };
 
   /**
@@ -246,7 +255,6 @@ define([
     else {
       throw new EmitterError("Unable to use 'event'");
     }
-
 
     // If we have `_handlers[type]` use it ...
     if (_handlers.hasOwnProperty(_type)) {
