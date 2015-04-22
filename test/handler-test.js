@@ -13,7 +13,7 @@ define([
     "handler.data is undefined by default": function () {
       var handler = new Emitter().on("test", function () {});
 
-      refute.defined(handler[DATA]);
+      refute(handler.hasOwnProperty(DATA));
     },
 
     "emitter.on stores rest parameters as handler.data": function () {

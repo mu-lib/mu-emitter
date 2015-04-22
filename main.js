@@ -14,6 +14,7 @@ define([
   var OBJECT_TOSTRING = Object.prototype.toString;
   var TOSTRING_STRING = "[object String]";
   var TOSTRING_FUNCTION = "[object Function]";
+  var LENGTH = "length";
 
   var HANDLERS = config.handlers;
   var EXECUTOR = config.executor;
@@ -43,8 +44,7 @@ define([
    */
   Emitter.prototype.on = function (type, callback) {
     var me = this;
-    var args = arguments;
-    var length = args.length;
+    var length = arguments[LENGTH];
     var data;
     var handlers = me[HANDLERS] || (me[HANDLERS] = {});
     var handler;
@@ -57,14 +57,18 @@ define([
     if (length > 2) {
       data = new Array(length - 2);
 
-      // let `args` be `Array.prototyps.slice.call(arguments, 2)` without deop
+      // let `data` be `Array.prototyps.slice.call(arguments, 2)` without deop
       while (length-- > 2) {
-        data[ length - 2 ] = args[length];
+        data[ length - 2 ] = arguments[length];
       }
-    }
 
-    // create `handler`
-    handler = new Handler(me, type, callback, data);
+      // create `handler` with `data`
+      handler = new Handler(me, type, callback, data);
+    }
+    else {
+      // create `handler` without `data`
+      handler = new Handler(me, type, callback);
+    }
 
     // if we have `handlers` for this `type` use them ...
     if (handlers.hasOwnProperty(type)) {
@@ -193,15 +197,9 @@ define([
    */
   Emitter.prototype.one = function (type, callback) {
     var me = this;
-    var args = arguments;
-    var length = args.length;
-    var _args = new Array(length - 1);
+    var length = arguments[LENGTH];
+    var args;
     var _callback;
-
-    // let `args` be `Array.prototyps.slice.call(arguments)` without deop
-    while (length--) {
-      _args[length] = args[length];
-    }
 
     if (OBJECT_TOSTRING.call(callback) === TOSTRING_FUNCTION) {
       _callback = {};
@@ -213,9 +211,24 @@ define([
       _callback[LIMIT] = 1;
     }
 
-    _args[1] = _callback;
+    // check if rest arguments were provided
+    if (length > 2) {
+      // create `args`
+      args = new Array(length - 1);
 
-    return me.on.apply(me, _args);
+      // let `args` be `Array.prototyps.slice.call(arguments)` without deop
+      while (length--) {
+        args[length] = arguments[length];
+      }
+
+      // let `args[1]` be `_callback`
+      args[1] = _callback;
+    }
+
+    // return result from calling or applying `.on` depending on if we have `args`
+    return args !== UNDEFINED
+      ? me.on.apply(me, args)
+      : me.on(type, _callback);
   };
 
   /**
@@ -227,7 +240,7 @@ define([
   Emitter.prototype.emit = function (event) {
     var me = this;
     var args = arguments;
-    var length = args.length;
+    var length = args[LENGTH];
     var _args = new Array(length - 1);
     var _handlers = me[HANDLERS] || (me[HANDLERS] = {});
     var _event;
