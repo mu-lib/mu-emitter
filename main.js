@@ -53,13 +53,16 @@ define([
 
     handler = new Handler(me, type, callback, data);
 
+    // if we have `handlers` for this `type` use them ...
     if (handlers.hasOwnProperty(type)) {
       handlers = handlers[type];
 
+      // re-link `handlers[TAIL]`
       handlers[TAIL] = handlers.hasOwnProperty(TAIL)
         ? handlers[TAIL][NEXT] = handler
         : handlers[HEAD] = handler;
     }
+    // ... otherwise we have to create and initialize
     else {
       handlers = handlers[type] = {};
 
@@ -88,9 +91,11 @@ define([
     var _callback;
     var _scope;
 
+    // no point of continuing if `handlers` has no `type`
     if (handlers.hasOwnProperty(type)) {
       handlers = handlers[type];
 
+      // if no `callback` is passed we remove _all_ `handlers` ...
       if (callback === UNDEFINED) {
         for (handler = handlers[HEAD]; handler !== UNDEFINED; handler = handler[NEXT]) {
           result[length++] = handler;
@@ -99,6 +104,7 @@ define([
         delete handlers[HEAD];
         delete handlers[TAIL];
       }
+      // ... otherwise check if filter param wer passed
       else {
         if (callback instanceof Handler) {
           _handler = callback;
@@ -113,6 +119,8 @@ define([
         }
 
         for (handler = handlers[HEAD]; handler !== UNDEFINED; handler = handler[NEXT]) {
+          // the end of `unlink` will unlink the current `handler` and `continue` the loop
+          // since the default is to unlink we check if filter parameters were provided but not matching to `break`
           unlink: {
             if (_handler && handler !== _handler) {
               break unlink;
@@ -131,6 +139,7 @@ define([
             continue;
           }
 
+          // update `head`, `tail` or both
           if (head === UNDEFINED) {
             head = tail = handler;
           }
@@ -139,6 +148,7 @@ define([
           }
         }
 
+        // set or `delete` `handlers[HEAD]`
         if (head !== UNDEFINED) {
           handlers[HEAD] = head;
         }
@@ -146,9 +156,11 @@ define([
           delete handlers[HEAD];
         }
 
+        // set or `delete` `handlers[TAIL]`
         if (tail !== UNDEFINED) {
           handlers[TAIL] = tail;
 
+          // make sure to clean up `tail[NEXT]`
           delete tail[NEXT];
         }
         else {
