@@ -39,11 +39,13 @@ define([
    * Adds an event handler
    * @param {String} type
    * @param {Function|Object} callback
-   * @param {Array} [data]
    * @return {Handler|*}
    */
-  Emitter.prototype.on = function (type, callback, data) {
+  Emitter.prototype.on = function (type, callback) {
     var me = this;
+    var args = arguments;
+    var length = args.length;
+    var data;
     var handlers = me[HANDLERS] || (me[HANDLERS] = {});
     var handler;
 
@@ -51,6 +53,17 @@ define([
       throw new EmitterError("no 'callback' provided");
     }
 
+    // check if we have rest arguments
+    if (length > 2) {
+      data = new Array(length - 2);
+
+      // let `args` be `Array.prototyps.slice.call(arguments, 2)` without deop
+      while (length-- > 2) {
+        data[ length - 2 ] = args[length];
+      }
+    }
+
+    // create `handler`
     handler = new Handler(me, type, callback, data);
 
     // if we have `handlers` for this `type` use them ...
@@ -199,7 +212,7 @@ define([
   /**
    * Emits an event
    * @param {String|Object} event Event type
-   * @param {...*} args Arguments to pass to handlers
+   * @param {...*} [args] Arguments to pass to handlers
    * @return {*}
    */
   Emitter.prototype.emit = function (event) {
