@@ -1,3 +1,6 @@
+/**
+ * @module mu-emitter/config
+ */
 define(function () {
   /**
    * @class mu.emitter.config

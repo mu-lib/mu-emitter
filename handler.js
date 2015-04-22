@@ -1,3 +1,6 @@
+/**
+ * @module mu-emitter/handler
+ */
 define([
   "./config",
   "./error"
@@ -15,6 +18,15 @@ define([
   var LIMIT = config.limit;
   var COUNT = config.count;
 
+  /**
+   * Represents an event handler
+   * @constructor
+   * @param {module:mu-emitter/main} emitter Event emitter
+   * @param {String} type Type this handler handles
+   * @param {Function} callback Callback that will be called
+   * @param {Array} [data] Data associated with this handler
+   * @alias module:mu-emitter/handler
+   */
   function Handler(emitter, type, callback, data) {
     var me = this;
 
@@ -40,6 +52,11 @@ define([
     }
   }
 
+  /**
+   * Plumbs and executes callback
+   * @param {Array} args Callback arguments
+   * @return {*}
+   */
   Handler.prototype.handle = function (args) {
     // Let `me` be `this`
     var me = this;
@@ -55,6 +72,9 @@ define([
     return result;
   };
 
+  /**
+   * Removes this handler for it's emitter
+   */
   Handler.prototype.off = function () {
     // Let `me` be `this`
     var me = this;

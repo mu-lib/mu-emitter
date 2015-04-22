@@ -1,3 +1,7 @@
+/**
+ * @module mu-emitter/main
+ * @exports mu-emitter/main
+ */
 define([
   "./config",
   "./handler",
@@ -21,11 +25,23 @@ define([
   var TAIL = config.tail;
   var NEXT = config.next;
 
+  /**
+   * Represents an event emitter
+   * @constructor
+   * @alias module:mu-emitter/main
+   */
   function Emitter() {
   }
 
   Emitter.prototype[EXECUTOR] = executor;
 
+  /**
+   * Adds an event handler
+   * @param {String} type
+   * @param {Function|Object} callback
+   * @param {Array} [data]
+   * @return {Handler|*}
+   */
   Emitter.prototype.on = function (type, callback, data) {
     var me = this;
     var handlers = me[HANDLERS] || (me[HANDLERS] = {});
@@ -54,6 +70,12 @@ define([
     return handler;
   };
 
+  /**
+   * Removes an event handler
+   * @param {String} type Event type
+   * @param {module:mu-emitter/handler|Function|Object} [callback]
+   * @return {Array} Removed handlers
+   */
   Emitter.prototype.off = function (type, callback) {
     var me = this;
     var result = [];
@@ -138,6 +160,13 @@ define([
     return result;
   };
 
+  /**
+   * Adds an event handler that will be called at most once
+   * @param {String} type
+   * @param {Function|Object} callback
+   * @param {Array} [data]
+   * @return {Handler|*}
+   */
   Emitter.prototype.one = function (type, callback, data) {
     var me = this;
     var _callback;
@@ -155,6 +184,12 @@ define([
     return me.on(type, _callback, data);
   };
 
+  /**
+   * Emits an event
+   * @param {String|Object} event Event type
+   * @param {...*} args Arguments to pass to handlers
+   * @return {*}
+   */
   Emitter.prototype.emit = function (event) {
     var me = this;
     var args = arguments;

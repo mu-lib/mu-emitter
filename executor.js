@@ -1,3 +1,6 @@
+/**
+ * @module mu-emitter/executor
+ */
 define([ "./config" ], function (config) {
   "use strict";
 
@@ -8,7 +11,11 @@ define([ "./config" ], function (config) {
   var NEXT = config.next;
 
 
-  return function executor(event, handlers, args) {
+  /**
+   * Represents an event executor
+   * @alias module:mu-emitter/executor
+   */
+  return function (event, handlers, args) {
     var _handlers = [];
     var _handlersCount = 0;
     var _callback = event[CALLBACK];
